@@ -1,0 +1,14 @@
+---
+- name: First call
+  hosts: copenhagen
+  become: true
+
+  tasks:
+    - name: First call
+      ansible.builtin.file:
+        path: /root/testfile.txt
+        state: touch
+    - name: Add line in file
+      ansible.builtin.lineinfile:
+        path: /root/testfile.txt
+        line: Ansible was here...

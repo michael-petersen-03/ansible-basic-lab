@@ -1,0 +1,25 @@
+---
+- name: Install httpd with become
+  hosts: copenhagen, stockholm
+  gather_facts: true
+
+  tasks:
+    - name: Set facts
+      ansible.builtin.set_fact:
+        os_fam: "{{ ansible_facts['os_family'] }}"
+
+    - name: Install httpd on RedHat
+      ansible.builtin.package:
+        name:
+          - httpd
+        state: present
+      become: true
+      when: os_fam == 'RedHat'
+
+    - name: Install Apache on Debian
+      ansible.builtin.package:
+        name:
+          - apache2
+        state: present
+      become: true
+      when: os_fam == 'Debian'
