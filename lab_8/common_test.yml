@@ -1,0 +1,53 @@
+---
+- name: Manage virtual machine state
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ovirt_engine_url: "https://ovirt.internal.cloudapp.net/ovirt-engine/api"
+    ovirt_engine_user: "admin@ovirt@internalsso"
+    ovirt_engine_password: "ChangeMe123!"
+    vm_name: "ubuntu-vm"
+    vm_state: "running" # Options: running, stopped, suspended
+
+  tasks:
+    - name: Authenticate to oVirt
+      ovirt.ovirt.ovirt_auth:
+        url: "{{ ovirt_engine_url }}"
+        username: "{{ ovirt_engine_user }}"
+        password: "{{ ovirt_engine_password }}"
+        insecure: true
+      register: ovirt_auth
+      no_log: true
+
+    - name: Get VM status
+      ovirt.ovirt.ovirt_vm_info:
+        auth: "{{ ovirt_auth.ansible_facts.ovirt_auth }}"
+        pattern: "name={{ vm_name }}"
+      register: vm_info
+
+    # - name: Create VM snapshot
+    #   ovirt.ovirt.ovirt_snapshot:
+    #     auth: "{{ ovirt_auth.ansible_facts.ovirt_auth }}"
+    #     vm_name: "{{ vm_name }}"
+    #     description: "Pre-update snapshot"
+    #     state: present
+
+    - name: Clone VM
+      ovirt.ovirt.ovirt_vm:
+        auth: "{{ ovirt_auth.ansible_facts.ovirt_auth }}"
+        name: "{{ vm_name }}clone"
+        cluster: "Default"
+        clone: true
+        state: present
+
+    - name: Remove VM
+      ovirt.ovirt.ovirt_vm:
+        auth: "{{ ovirt_auth.ansible_facts.ovirt_auth }}"
+        name: "{{ vm_name }}"
+        state: absent
+
+    - name: Revoke authentication
+      ovirt.ovirt.ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth.ansible_facts.ovirt_auth }}"
