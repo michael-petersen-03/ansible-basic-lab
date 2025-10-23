@@ -8,8 +8,8 @@
         name: "webserver_{{ user }}"
         location: northeurope
         tags:
-            solution: "webserver_{{ user }}"
-            delete: ansibletraining
+          solution: "webserver_{{ user }}"
+          delete: ansibletraining
       register: rg
     - name: Show RG
       ansible.builtin.debug:
