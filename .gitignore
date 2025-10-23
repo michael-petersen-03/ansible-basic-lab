@@ -1,2 +1,5 @@
 .azure/credentials
-lab5/.vault_pass
+lab_5/.vault_pass
+lab_5/.vault_pass_staging
+lab_5/.vault_pass_prod
+lab_5/.vault_pass_dev
